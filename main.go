@@ -408,12 +408,12 @@ func (p *parser) errf(format string, args ...interface{}) error {
 	snippet := beforeBad + badChar + afterBad
 
 	//construct invalid char pointer
-	pointer := "         \033[1;31m"
+	pointer := "    \033[1;31m"
 	for i := 0; i < 10; i++ {
 		pointer += " "
 	}; pointer += "^\033[0m"
 
-	errStr := fmt.Sprintf("%s\n    near %s\n%s", 
+	errStr := fmt.Sprintf("%s near\n    %s\n%s", 
 			msg, snippet, pointer)
 
 	return errors.New(errStr)
