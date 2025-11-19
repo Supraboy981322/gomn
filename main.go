@@ -447,8 +447,10 @@ func (p *parser) consume(expected byte) bool {
 	//increment position and return valid 
 	if p.s[p.pos] == expected {
 		p.pos++
+
 		return true
 	}
+
 	return false
 }
 
@@ -461,11 +463,13 @@ func (p *parser) eof() bool {
 func (p *parser) errf(format string, args ...interface{}) error {
 	msg := fmt.Sprintf(format, args...)
 
+	//get the start position of snippet 
 	start := p.pos - 10
 	if start < 0 {
 		start = 0
 	}
 
+	//get the end position of snippet 
 	end := p.pos + 10
 	if end > p.n {
 		end = p.n
@@ -473,21 +477,26 @@ func (p *parser) errf(format string, args ...interface{}) error {
 
 	//get text before invalid
 	beforeBad := "\033[0;37m" + p.s[start:p.pos] + "\033[0m"
+
 	//highlight invalid char
 	badChar := "\033[1;31m" + string(p.s[p.pos]) + "\033[0m"
+
 	//get text after invalid
 	afterBad := "\033[0;37m" + p.s[p.pos+1:end] + "\033[0m"
-	//combine it into a snippet
+
+	//build the snippet
 	snippet := beforeBad + badChar + afterBad
 
-	//construct invalid char pointer
-	pointer := "    \033[1;31m"
+	//create invalid char pointer
+	pointer := "    \033[1;31m" //starting point and color code 
 	for i := 0; i < len(p.s[start:p.pos]); i++ {
-		pointer += " "
-	}; pointer += "^\033[0m"
+		pointer += " " //add whitespace
+	}; pointer += "^\033[0m" //add pointer and end color code
 
+	//construct err
 	errStr := fmt.Sprintf("%s near\n    %s\n%s", 
 			msg, snippet, pointer)
 
+	//return err
 	return errors.New(errStr)
 }
