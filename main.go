@@ -30,7 +30,7 @@ func Parse(input string) (Map, error) {
 	p := &parser{
 		s: input,
 		pos: 0,
-		n: len(input)
+		n: len(input),
 	}
 
 	//make a blank map
