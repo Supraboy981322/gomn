@@ -385,6 +385,7 @@ func (p *parser) skipSpaces() {
 
 		if unicode.IsSpace(rune(c)) {
 			p.next()
+
 			continue
 		}
 
@@ -392,6 +393,7 @@ func (p *parser) skipSpaces() {
 		if c == '/' && p.pos+1 < p.n && p.s[p.pos+1] == '/' {
 			// consume until newline
 			p.pos += 2
+
 			for !p.eof() && p.peek() != '\n' {
 				p.next()
 			}
@@ -406,6 +408,7 @@ func (p *parser) skipSpaces() {
 			for !p.eof() {
 				if p.peek() == '*' && p.pos+1 < p.n && p.s[p.pos+1] == '/' {
 					p.pos += 2
+
 					break
 				}
 
@@ -428,12 +431,14 @@ func (p *parser) peek() byte {
 	return p.s[p.pos]
 }
 
+//get next char and increment position
 func (p *parser) next() byte {
 	if p.eof() {
 		return 0
 	}
 
 	ch := p.s[p.pos]
+
 	p.pos++
 	
 	return ch
