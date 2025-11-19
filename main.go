@@ -87,20 +87,77 @@ func (p *parser) parseValue() (interface{}, error) {
 		return nil, p.errf("unexpected EOF while parsing value")
 	}
 
-	//check if file about to end
 	c := p.peek()
 	switch c {
 	case '{':
-		return p.parseArray() //assume array
+		return p.parseArray() //array
 	case '[':
 		return p.parseValueSimple()
 	case '"':
 		return p.parseString() //returns as string
 	case '\'':
 		return p.parseString() //made into rune before return 
+	case '|':
+		return p.parseMap() //nested map
 	default:
 		return p.parseValueSimple()
 	}
+}
+
+func (p *parser) parseMap() (Map, error) {
+	p.pos++
+	//make a blank map
+	out := make(Map)
+	for {
+		p.skipSpaces()
+		if p.next() == '|' {
+			break //assumed end of nested map
+		}
+		p.pos--
+
+		p.skipSpaces()
+		if p.eof() {
+			return out, p.errf("unexpected EOF while parsing nested map")
+		}
+
+		p.skipSpaces()
+		//check if valid start
+		if !p.consume('[') {
+			return nil, p.errf("nested: expected '[' to start key")
+		}
+ 
+		key, err := p.parseValueSimple()
+		if err != nil {
+			return nil, err
+		}
+
+		//make sure key is ended properly
+		if !p.consume(']') {
+			return nil, p.errf("nested: expected ']' after key")
+		}
+		
+		p.skipSpaces()
+
+		//make sure it's defined 
+		if !p.consume(':') || !p.consume('=') {
+			return nil, p.errf("nested: expected ':=' after key")
+		}
+
+		p.skipSpaces()
+
+		//get the value
+		val, err := p.parseValue()
+		if err != nil {
+			return nil, err
+		}
+ 
+		//add to result
+		out[key] = val
+
+		p.skipSpaces()
+	}
+
+	return out, nil
 }
 
 //parses primitive single literal, nested constructs, or maps
@@ -319,7 +376,6 @@ func (p *parser) consume(expected byte) bool {
 		p.pos++
 		return true
 	}
-
 	return false
 }
 
