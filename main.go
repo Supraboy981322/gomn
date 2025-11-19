@@ -24,7 +24,7 @@ func ParseIgn(input string) Map {
 	return res
 }
 
-//func called from mod 
+//func called from mod
 func Parse(input string) (Map, error) {
 	//construct parser 
 	p := &parser{
@@ -105,7 +105,9 @@ func (p *parser) parseValue() (interface{}, error) {
 }
 
 func (p *parser) parseMap() (Map, error) {
-	p.pos++
+	p.pos++ //fixes an odd bug,
+	        //  probably a logic issue
+
 	//make a blank map
 	out := make(Map)
 	for {
@@ -113,19 +115,25 @@ func (p *parser) parseMap() (Map, error) {
 		if p.next() == '|' {
 			break //assumed end of nested map
 		}
+
+		//this fixes said bug from earlier too 
 		p.pos--
 
 		p.skipSpaces()
+		
+		//check if the file has ended
 		if p.eof() {
 			return out, p.errf("unexpected EOF while parsing nested map")
 		}
 
 		p.skipSpaces()
+
 		//check if valid start
 		if !p.consume('[') {
 			return nil, p.errf("nested: expected '[' to start key")
 		}
  
+		//
 		key, err := p.parseValueSimple()
 		if err != nil {
 			return nil, err
@@ -172,18 +180,23 @@ func (p *parser) parseValueSimple() (interface{}, error) {
 	case '"':
 		return p.parseString()
 	case '\'':
-		return p.parseString() //is returned as a string
+		return p.parseString() //is returned as a []rune
 	case '{':
 		return p.parseArray() //assume it's an array
 	case '[':
 		p.consume('[')
+
+		//parse key
 		v, err := p.parseValueSimple()
 		if err != nil {
 			return nil, err
 		}
+		
+		//make sure the key is ended properly
 		if !p.consume(']') {
-			return nil, p.errf("expected ']' after bracketed value")
+			return nil, p.errf("expected ']' after key value")
 		}
+
 		return v, nil
 	default:
 		return p.parseIdentifierOrNumber()
@@ -191,47 +204,73 @@ func (p *parser) parseValueSimple() (interface{}, error) {
 }
 
 func (p *parser) parseArray() (interface{}, error) {
+	//make sure it's actually an array
 	if !p.consume('{') {
 		return nil, p.errf("expected '{' to start array")
 	}
+	
+	//create the interface for the array
 	arr := make([]interface{}, 0)
+	//iterate through chars
 	for {
 		p.skipSpaces()
+
+		//make sure the array is closed properly 
 		if p.eof() {
 			return nil, p.errf("unexpected EOF in array")
 		}
+
+		//close array, assume no more items
 		if p.peek() == '}' {
 			p.consume('}')
 			break
 		}
+
+		//get val of item
 		v, err := p.parseValue()
 		if err != nil {
 			return nil, err
 		}
+		
+		//add item to array
 		arr = append(arr, v)
+
 		p.skipSpaces()
+
+		//check if there's another item
 		if p.peek() == ',' {
 			p.consume(',')
 			p.skipSpaces()
 			continue
 		}
+
+		//check if it's ended
 		if p.peek() == '}' {
 			p.consume('}')
 			break
 		}
+
+		//assume something invalid if got this far 
 		return nil, p.errf("expected ',' or '}' in array")
 	}
+
 	return arr, nil
 }
 
 func (p *parser) parseString() (interface{}, error) {
+	//make sure its formatting is valid 
 	if !p.consume('"') && !p.consume('\'') {
 		return nil, p.errf("expected '\"' or '\\'' to start string")
 	}
+ 
 	var sb strings.Builder
+	
 	escaped := false
 	for !p.eof() {
+		//get next char 
 		ch := p.next()
+
+		//check whether to escape it
 		if escaped {
 			switch ch {
 			case 'n':
@@ -249,21 +288,32 @@ func (p *parser) parseString() (interface{}, error) {
 			default:
 				sb.WriteByte(ch)
 			}
+
+			//return back to unescaped
 			escaped = false
+
 			continue
 		}
+
+		//escape escape
 		if ch == '\\' {
 			escaped = true
 			continue
 		}
+
+		//assume ended 
 		if ch == '"' {
 			return sb.String(), nil
 		}
+
+		//assume ended, also this is for []runes
 		if ch == '\'' {
 			return []rune(sb.String()), nil
 		}
+ 
 		sb.WriteByte(ch)
 	}
+
 	return nil, p.errf("unterminated string")
 }
 
@@ -273,7 +323,9 @@ func (p *parser) parseIdentifierOrNumber() (interface{}, error) {
 		p.next()
 	}
 	if unicode.IsDigit(rune(p.peek())) {
-		for !p.eof() && (unicode.IsDigit(rune(p.peek())) || p.peek() == '.') {
+		for !p.eof() &&
+				(unicode.IsDigit(rune(p.peek())) ||
+						 p.peek() == '.') {
 			p.next()
 		}
 		raw := p.s[start:p.pos]
@@ -294,7 +346,10 @@ func (p *parser) parseIdentifierOrNumber() (interface{}, error) {
 		}
 		return f, nil
 	}
-	for !p.eof() && (unicode.IsLetter(rune(p.peek())) || p.peek() == '_' || unicode.IsDigit(rune(p.peek()))) {
+	for !p.eof() && 
+			(unicode.IsLetter(rune(p.peek())) || 
+					 p.peek() == '_' ||
+					 unicode.IsDigit(rune(p.peek()))) {
 		p.next()
 	}
 	raw := p.s[start:p.pos]
@@ -307,7 +362,9 @@ func (p *parser) parseIdentifierOrNumber() (interface{}, error) {
 		return nil, nil
 	default:
 		if raw == "" {
-			return nil, p.errf("unexpected token: %v\n  at pos %d", string(p.s[p.pos]), p.pos)
+			return nil, p.errf("unexpected token: %v\n  at pos %d",
+										string(p.s[p.pos]),
+										p.pos)
 		}
 		return raw, nil
 	}
