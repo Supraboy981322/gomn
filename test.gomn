@@ -1,0 +1,43 @@
+/************************
+ * this is a test file  *
+ * for the gomn project *
+ ************************/
+
+//it supports both multi-line (above)
+//  and C-style comments
+
+/*
+  at the moment, basic values are
+    the only types which don't require
+    type assertion after retrieval
+    (unless you attempt to do something like string() of a rune, then it's suddenly an interface{}) 
+
+  most other types are returned as type of:
+    interface{}
+  so you must use type assertion after
+  getting those types
+
+  the file is treated as a map
+*/
+["foo"] := 'bar' //values can be a string
+
+["nested map"] := |
+  ["n1"] := "value of n1"
+|
+
+//keys can be a bool too, if you need that
+//  for whatever reason
+[false] := '[]rune' //and value type does not need to match key type
+
+//keys can be strings (as shown earlier)
+["string"] := { //values can be arrays
+  "{bar", //array value types can be string
+  true,  //  bool
+  1,     //  int
+  'quz', //  []rune
+}
+
+//keys can also be an int
+[1] := {
+  {1,false,3,4} //and nested arrays are supported
+}
