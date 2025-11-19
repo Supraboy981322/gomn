@@ -12,6 +12,9 @@
     type assertion after retrieval
     (unless you attempt to do something like string() of a rune, then it's suddenly an interface{}) 
 
+  maps are returned as type:
+    gomn.Map
+
   most other types are returned as type of:
     interface{}
   so you must use type assertion after
