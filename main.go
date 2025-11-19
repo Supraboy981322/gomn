@@ -328,30 +328,37 @@ func (p *parser) parseIdentifierOrNumber() (interface{}, error) {
 						 p.peek() == '.') {
 			p.next()
 		}
+
 		raw := p.s[start:p.pos]
 		if strings.Contains(raw, ".") {
 			f, err := strconv.ParseFloat(raw, 64)
 			if err != nil {
 				return nil, p.errf("invalid float %q", raw)
 			}
+
 			return f, nil
 		}
+
 		i, err := strconv.ParseInt(raw, 10, 64)
 		if err == nil {
 			return int(i), nil
 		}
+
 		f, err := strconv.ParseFloat(raw, 64)
 		if err != nil {
 			return nil, p.errf("invalid number %q", raw)
 		}
+
 		return f, nil
 	}
+
 	for !p.eof() && 
 			(unicode.IsLetter(rune(p.peek())) || 
 					 p.peek() == '_' ||
 					 unicode.IsDigit(rune(p.peek()))) {
 		p.next()
 	}
+
 	raw := p.s[start:p.pos]
 	switch raw {
 	case "true":
@@ -366,6 +373,7 @@ func (p *parser) parseIdentifierOrNumber() (interface{}, error) {
 										string(p.s[p.pos]),
 										p.pos)
 		}
+
 		return raw, nil
 	}
 }
@@ -374,10 +382,12 @@ func (p *parser) parseIdentifierOrNumber() (interface{}, error) {
 func (p *parser) skipSpaces() {
 	for !p.eof() {
 		c := p.peek()
+
 		if unicode.IsSpace(rune(c)) {
 			p.next()
 			continue
 		}
+
 		// C-style comments
 		if c == '/' && p.pos+1 < p.n && p.s[p.pos+1] == '/' {
 			// consume until newline
@@ -385,20 +395,26 @@ func (p *parser) skipSpaces() {
 			for !p.eof() && p.peek() != '\n' {
 				p.next()
 			}
+
 			continue
 		}
+
 		// basic mult-line comments
 		if c == '/' && p.pos+1 < p.n && p.s[p.pos+1] == '*' {
 			p.pos += 2
+
 			for !p.eof() {
 				if p.peek() == '*' && p.pos+1 < p.n && p.s[p.pos+1] == '/' {
 					p.pos += 2
 					break
 				}
+
 				p.next()
 			}
+
 			continue
 		}
+
 		break
 	}
 }
