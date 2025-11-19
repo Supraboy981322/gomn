@@ -307,7 +307,7 @@ func (p *parser) parseIdentifierOrNumber() (interface{}, error) {
 		return nil, nil
 	default:
 		if raw == "" {
-			return nil, p.errf("unexpected token at pos %d", p.pos)
+			return nil, p.errf("unexpected token: %v\n  at pos %d", string(p.s[p.pos]), p.pos)
 		}
 		return raw, nil
 	}
@@ -398,10 +398,23 @@ func (p *parser) errf(format string, args ...interface{}) error {
 		end = p.n
 	}
 
-	snippet := p.s[start:end]
+	//get text before invalid
+	beforeBad := p.s[start:p.pos]
+	//highlight invalid char
+	badChar := "\033[1;31m" + string(p.s[p.pos]) + "\033[0m"
+	//get text after invalid
+	afterBad := p.s[p.pos+1:end]
+	//combine it into a snippet
+	snippet := beforeBad + badChar + afterBad
 
-	errStr := fmt.Sprintf("%s (pos=%d) near %q", 
-			msg, p.pos, snippet)
+	//construct invalid char pointer
+	pointer := "         \033[1;31m"
+	for i := 0; i < 10; i++ {
+		pointer += " "
+	}; pointer += "^\033[0m"
+
+	errStr := fmt.Sprintf("%s\n    near %s\n%s", 
+			msg, snippet, pointer)
 
 	return errors.New(errStr)
 }
