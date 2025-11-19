@@ -25,7 +25,10 @@
 ["foo"] := 'bar' //values can be a string
 
 ["nested map"] := |
-  ["n1"] := "value of n1"
+  ["v1"] := "value of n1"
+  ["v2"] := |
+    ["n2"] := "value of v2 in map within nested map
+  |
 |
 
 //keys can be a bool too, if you need that

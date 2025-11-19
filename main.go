@@ -399,11 +399,11 @@ func (p *parser) errf(format string, args ...interface{}) error {
 	}
 
 	//get text before invalid
-	beforeBad := p.s[start:p.pos]
+	beforeBad := "\033[0;37m" + p.s[start:p.pos] + "\033[0m"
 	//highlight invalid char
 	badChar := "\033[1;31m" + string(p.s[p.pos]) + "\033[0m"
 	//get text after invalid
-	afterBad := p.s[p.pos+1:end]
+	afterBad := "\033[0;37m" + p.s[p.pos+1:end] + "\033[0m"
 	//combine it into a snippet
 	snippet := beforeBad + badChar + afterBad
 
