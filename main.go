@@ -409,7 +409,7 @@ func (p *parser) errf(format string, args ...interface{}) error {
 
 	//construct invalid char pointer
 	pointer := "    \033[1;31m"
-	for i := 0; i < 10; i++ {
+	for i := 0; i < len(p.s[start:p.pos]); i++ {
 		pointer += " "
 	}; pointer += "^\033[0m"
 
