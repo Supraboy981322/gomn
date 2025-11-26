@@ -19,10 +19,6 @@ type (
 	}
 )
 
-var (
-	emptyMap Map
-)
-
 //parse and ignore err
 func ParseIgn(input string) Map {
 	res, _ := Parse(input) 
@@ -48,7 +44,7 @@ func GetValueFromStr(key any, gomnStr string) (interface{}, error) {
 func ParseFile(file string) (Map, error) {
 	fileBytes, err := os.ReadFile(file)
 	if err != nil {
-		return emptyMap, err
+		return nil, err
 	}
 
 	return Parse(string(fileBytes))
