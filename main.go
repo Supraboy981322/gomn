@@ -1,8 +1,9 @@
 package gomn
 
 import (
-	"errors"
+	"os"
 	"fmt"
+	"errors"
 	"strconv"
 	"strings"
 	"unicode"
@@ -18,10 +19,23 @@ type (
 	}
 )
 
+var (
+	emptyMap Map
+)
+
 //parse and ignore err
 func ParseIgn(input string) Map {
 	res, _ := Parse(input) 
 	return res
+}
+
+func ParseFile(file string) (Map, error) {
+	fileBytes, err := os.ReadFile(file)
+	if err != nil {
+		return emptyMap, err
+	}
+
+	return Parse(string(fileBytes))
 }
 
 //func called from mod
