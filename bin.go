@@ -1,5 +1,11 @@
 package gomn
 
+/*
+ *GOMN AS A BINARY IS EXPERIMENTAL
+ * however, it's unlikely to be removed
+ *  nor will it have breaking changes
+ */
+
 import (
 	"os"
 	"encoding/gob"
