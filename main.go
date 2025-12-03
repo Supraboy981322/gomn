@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"strings"
 	"unicode"
+	"encoding/gob"
 )
 
 type (
@@ -18,6 +19,10 @@ type (
 		n   int
 	}
 )
+
+func init() {
+	gob.Register(Map{})
+}
 
 //parse and ignore err
 func ParseIgn(input string) Map {

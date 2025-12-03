@@ -3,6 +3,8 @@
  * for the gomn project *
  ************************/
 
+//gomn can also be a binary (experimental and not yet fully compatible)
+
 //it supports both multi-line (above)
 //  and C-style comments
 
@@ -36,15 +38,15 @@
 [false] := '[]rune' //and value type does not need to match key type
 
 //keys can be strings (as shown earlier)
-["string"] := { //values can be arrays
-  "{bar", //array value types can be string
-  true,  //  bool
-  1,     //  int
-  'quz', //  []rune
-}
+//["string"] := { //values can be arrays (currently broken for binary gomn)
+//  "{bar", //array value types can be string
+//  true,  //  bool
+//  1,     //  int
+//  'quz', //  []rune
+//}
 
 //keys can also be an int
-[1] := {
-  {1,false,3,4},       //nested arrays
-  {"foo", 'bar', true} // are supported
-}
+//[1] := {
+//  {1,false,3,4},       //nested arrays
+//  {"foo", 'bar', true} // are supported
+//}
