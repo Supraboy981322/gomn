@@ -3,7 +3,8 @@
  * for the gomn project *
  ************************/
 
-//gomn can also be a binary (experimental and not yet fully compatible)
+//now with gomn-as-a-binary (gaab)
+//  (experimental and not yet fully compatible)
 
 //it supports both multi-line (above)
 //  and C-style comments
@@ -38,7 +39,7 @@
 [false] := '[]rune' //and value type does not need to match key type
 
 //keys can be strings (as shown earlier)
-//["string"] := { //values can be arrays (currently broken for binary gomn)
+//["string"] := { //values can be arrays (currently broken for gaab)
 //  "{bar", //array value types can be string
 //  true,  //  bool
 //  1,     //  int
@@ -50,3 +51,4 @@
 //  {1,false,3,4},       //nested arrays
 //  {"foo", 'bar', true} // are supported
 //}
+
