@@ -41,11 +41,9 @@ func main() {
 	}
 
 	var res any
-	var ok bool
 	cur := GOMN
 	for _, p := range path {
-		var n gomn.Map
-		if n, ok = GOMN[p].(gomn.Map); ok {
+		if n, ok := cur[p].(gomn.Map); ok {
 			cur = n
 		} else { res = cur[p] }
 	}
