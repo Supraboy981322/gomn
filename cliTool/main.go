@@ -33,6 +33,8 @@ func init() {
 			}
 		}
 	}
+
+	if file == "-" { file = "" }
 }
 
 func main() {
