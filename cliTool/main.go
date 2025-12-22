@@ -2,8 +2,8 @@ package main
 
 import (
 	"os"
+	"io"
 	"fmt"
-	"bufio"
 	"slices"
 	"strings"
 	"strconv"
@@ -38,15 +38,9 @@ func init() {
 func main() {
 	var in string
 	if file == "" {
-		scanner := bufio.NewScanner(os.Stdin)
-		if scanner.Scan() {
-			in += scanner.Text()
-		} else if err := scanner.Err(); err != nil {
-				erorF("failed read stdin", err)
-		} else {
-			err := fmt.Errorf("no input provided")
-			erorF("err reading input", err)
-		}
+		stdinB, err := io.ReadAll(os.Stdin)
+		if err != nil {	erorF("failed read stdin", err) }
+		in = string(stdinB)
 	} else {
 		inB, err := os.ReadFile(file)
 		if err != nil { erorF("failed to read file", err) }
