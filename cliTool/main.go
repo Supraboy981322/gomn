@@ -39,7 +39,7 @@ func main() {
 	var in string
 	if file == "" {
 		stdinB, err := io.ReadAll(os.Stdin)
-		if err != nil {	erorF("failed read stdin", err) }
+		if err != nil {	erorF("failed to read stdin", err) }
 		in = string(stdinB)
 	} else {
 		inB, err := os.ReadFile(file)
